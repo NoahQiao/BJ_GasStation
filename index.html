@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>[DEMO]北京加油站分布</title>
+		<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<style type="text/css">
+
+			div.right_top {
+				background: rgba(0,45,40,0.9);
+				color: #ffffff;
+				overflow: hidden;
+				z-index: 9999;
+				position: fixed;
+				/*DIV悬浮(固定位置)*/
+				padding: 5px;
+				text-align: left;
+				width: 175px;
+				height: 222px;
+				border-bottom-left-radius: 4px;
+				border-bottom-right-radius: 4px;
+				border-top-left-radius: 4px;
+				border-top-right-radius: 4px;
+				right: 10px;
+				top: 30px;
+			}
+
+		</style>
+		<style>
+			html,
+			body,
+			#map {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			.demo-title {
+				position: absolute;
+				top: 25px;
+				left: 25px;
+				z-index: 1;
+			}
+
+			h1 {
+				font-size: 18px;
+				margin: 0;
+				color: rgb(180, 180, 190);
+			}
+
+			h3 {
+				font-size: 12px;
+				font-weight: normal;
+				margin-top: 5px;
+				color: rgb(150, 150, 150);
+			}
+		</style>
+
+
+	</head>
+
+	<body>
+
+		<div>
+			运营商：
+			<select id="selectID" name="condition">
+				<option id="x" value="start">---请选择---</option>
+				<option id="x" value="./BJ_Gasst.geojson">全部</option>
+				<option id="a" value="./中石油.geojson">中石油</option>
+				<option id="b" value="./中石化.geojson">中石化</option>
+				<option id="c" value="./中化道尔达.geojson">中化道尔达</option>
+				<option id="d" value="./壳牌.geojson">壳牌</option>
+				<option id="e" value="./其他.geojson">其他</option>
+			</select>
+
+		</div>
+		<div class="right_top"> 
+		<p>
+			<h1> 北京市加油站统计</h1>
+			————————————  <br />
+			总计：1114  <br />
+			————————————  <br />
+			中国石化：593  <br />
+			中国石油：256  <br />
+			壳牌：38  <br />
+			中化道达尔：21  <br />
+			其他：206  <br />
+		</p>
+		</div>
+		<div id="map"></div>
+		<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://webapi.amap.com/maps?v=2.0&key=6707ebbe1fc0ff9b3420b0ab90338f81"></script>
+		<script src="https://webapi.amap.com/loca?v=2.0.0&key=6707ebbe1fc0ff9b3420b0ab90338f81"></script>
+
+		<script>
+			var map = new AMap.Map('map', {
+				zoom: 11.0,
+				center: [116.39, 39.93],
+				mapStyle: 'amap://styles/45311ae996a8bea0da10ad5151f72979',
+				showLabel: true,
+				viewMode: '3D',
+			});
+
+			var loca = new Loca.Container({
+				map,
+			});
+			var scatter = window.ll = new Loca.IconLayer({
+				// loca,
+				zIndex: 10,
+				opacity: 1,
+				visible: true,
+				zooms: [2, 22],
+			});
+		</script>
+
+		<script type="text/javascript">
+			var selectValue = "";
+			$("#selectID").change(function() {
+				SelectChange();
+			});
+			var keydata = [];
+
+			function SelectChange() {
+				//获取下拉框选中项的text属性值
+				selectValue = $("#selectID").val();
+
+				$.ajaxSettings.async = false;
+				a = $.getJSON($("#selectID").val(), "", function(result) {
+					keydata = result;
+				});
+				console.log(keydata);
+
+				var geo = new Loca.GeoJSONSource({
+					data: keydata,
+				});
+
+				scatter.setSource(geo, {
+					unit: 'px',
+					iconSize: [25, 25],
+					icon: 'https://static.thenounproject.com/png/1669736-200.png',
+					opacity: 0.8,
+				});
+				loca.add(scatter);
+			}
+		</script>
+	</body>
+
+</html>
